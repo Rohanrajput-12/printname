@@ -1,7 +1,10 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+
 import "./App.css";
 
 function App() {
+  const navigate = useNavigate();
   const [names, setNames] = useState([]);
   const [isPrinting, setIsPrinting] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -9,6 +12,19 @@ function App() {
   const bottomRef = useRef(null);
   const intervalRef = useRef(null);
   const maxCount = 100001;
+
+  useEffect(() => {
+    const isAuth = localStorage.getItem("auth");
+    if (!isAuth) {
+      navigate("/");
+    }
+  }, []);
+
+  const handleLogout = () => {
+  localStorage.removeItem("auth");
+  window.speechSynthesis.cancel(); // Stop any ongoing voice
+  navigate("/");
+};
 
   const speakNow = (text) => {
     const voices = window.speechSynthesis.getVoices();
@@ -111,6 +127,15 @@ function App() {
               🛑 Stop
             </button>
           </div>
+           <div className="px-4 mt-2">
+          <button
+            onClick={handleLogout}
+            className="w-full py-1.5 rounded-xl text-sm font-semibold transition-all duration-200 bg-gray-800 text-white hover:bg-black active:scale-95 shadow-md"
+          >
+            🔓 Logout
+          </button>
+          </div>
+         
 
           {/* Progress Info */}
           <div className="px-4 text-xs text-gray-600 mt-2">
@@ -124,6 +149,7 @@ function App() {
               style={{ width: `${progress}%` }}
             />
           </div>
+          
 
           {/* Name List */}
           <div className="flex-1 overflow-y-auto px-4 py-2 custom-scroll text-xs text-gray-800">
@@ -137,6 +163,7 @@ function App() {
         </div>
       </div>
     </div>
+    
   );
 }
 
