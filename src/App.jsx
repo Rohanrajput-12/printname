@@ -12,6 +12,8 @@ function App() {
   const bottomRef = useRef(null);
   const intervalRef = useRef(null);
   const maxCount = 100001;
+  const audioRef = useRef(null);
+  const [isMusicPlaying, setIsMusicPlaying] = useState(true);
 
   useEffect(() => {
     const isAuth = localStorage.getItem("auth");
@@ -19,6 +21,15 @@ function App() {
       navigate("/");
     }
   }, []);
+
+  useEffect(() => {
+  if (audioRef.current) {
+    audioRef.current.volume = 1; // Set a soft volume
+    audioRef.current.play().catch((e) => {
+      console.log("Autoplay prevented:", e);
+    });
+  }
+}, []);
 
   const handleLogout = () => {
   localStorage.removeItem("auth");
@@ -39,7 +50,7 @@ function App() {
     utterance.lang = "hi-IN";
     utterance.rate = 0.95;
     utterance.pitch = 1.2;
-    utterance.volume = 1;
+    utterance.volume = 0.5;
 
     window.speechSynthesis.cancel();
     window.speechSynthesis.speak(utterance);
@@ -93,6 +104,13 @@ function App() {
           alt="Radhe Krishna"
           className="absolute inset-0 w-full h-full object-cover opacity-40 z-0 "
         />
+        <audio
+          ref={audioRef}
+          src="/kriahnflute.mp3"
+          loop
+          autoPlay
+          hidden
+        />
 
         {/* Foreground content on top of the image */}
         <div className="flex flex-col w-full h-full relative z-10 bg-white/60 backdrop-blur-sm">
@@ -126,6 +144,21 @@ function App() {
             >
               🛑 Stop
             </button>
+            <button
+                onClick={() => {
+                  if (audioRef.current) {
+                    if (isMusicPlaying) {
+                      audioRef.current.pause();
+                    } else {
+                      audioRef.current.play();
+                    }
+                    setIsMusicPlaying(!isMusicPlaying);
+                  }
+                }}
+                className="absolute top-2 right-2 bg-white/80 text-black text-xs px-3 py-1 rounded-full shadow-md"
+              >
+                {isMusicPlaying ? "🔇 Mute" : "🔊 Play"}
+              </button>
           </div>
            <div className="px-4 mt-2">
           <button
