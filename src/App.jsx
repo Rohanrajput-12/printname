@@ -22,14 +22,14 @@ function App() {
     }
   }, []);
 
-  useEffect(() => {
-  if (audioRef.current) {
-    audioRef.current.volume = 1; // Set a soft volume
-    audioRef.current.play().catch((e) => {
-      console.log("Autoplay prevented:", e);
-    });
-  }
-}, []);
+//   useEffect(() => {
+//   if (audioRef.current) {
+//     audioRef.current.volume = 1; // Set a soft volume
+//     audioRef.current.play().catch((e) => {
+//       console.log("Autoplay prevented:", e);
+//     });
+//   }
+// }, []);
 
   const handleLogout = () => {
   localStorage.removeItem("auth");
@@ -68,6 +68,11 @@ function App() {
     setProgress(0);
     countRef.current = 0;
 
+        if (audioRef.current) {
+      audioRef.current.volume = 1.0;
+      audioRef.current.play();
+    }
+
     intervalRef.current = setInterval(() => {
       if (countRef.current >= maxCount) {
         clearInterval(intervalRef.current);
@@ -86,7 +91,13 @@ function App() {
     setIsPrinting(false);
     clearInterval(intervalRef.current);
     window.speechSynthesis.cancel();
+
+       if (audioRef.current) {
+    audioRef.current.pause();
+    audioRef.current.currentTime = 0; 
+  }
   };
+
 
   useEffect(() => {
     if (bottomRef.current) {
